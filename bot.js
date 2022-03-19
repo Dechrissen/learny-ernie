@@ -76,6 +76,16 @@ eventAnnouncement.start();
 });
 
 client.on("messageCreate", message => {
+	// The simpler way
+	let embed = new Discord.MessageEmbed({
+	 title: '**Hello World**',
+	 description: 'Markdown _for the win_!'
+	});
+
+	embed.setColor(7081235);
+	embed.setTimestamp(message.createdAt);
+	
+
   // checks to see if message author is a bot, or if it doesn't start with "!"
   if (!message.content.startsWith(prefix) || message.author.bot) return;
 
