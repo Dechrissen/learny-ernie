@@ -37,13 +37,21 @@ function setBotCommands (client) {
 // EVENT LISTENERS //
 client.once('ready', () => {
   console.log(`Ready! Logged in as ${client.user.tag}.`);
+
+	// Set bot's displayed activity on Discord
 	client.user.setActivity('Studying Saturdays');
+
+	// Create collection of nonbasic bot commands
+	setBotCommands(client);
+
+	// Define some relevant IDs
 	derkscord_id = '577602263682646017';
 	classroom_channel_id = '954723619924226129';
 	learner_role_id = '954771555680944270';
 	participant_role_id = '954779034519224390';
-	setBotCommands(client);
-	StudyingSaturday.begin();
+
+	const derkscord = client.guilds.cache.get(derkscord_id);
+	StudyingSaturday.begin(derkscord);
 
 	// Weekly reminder for Studying Saturdays event
 	// This runs every Saturday 10 minutes prior to 11:00:00
@@ -53,16 +61,16 @@ client.once('ready', () => {
          channel.send('<@&' + learner_role_id + '> *Studying Saturday* will begin in 10 minutes!');
   });
 
-
 	// Weekly Studying Saturdays announcement message
 	// This runs every Saturday at 11:00:00
 	let eventAnnouncement = new cron.CronJob('0 0 11 * * 6', () => {
          const guild = client.guilds.cache.get(derkscord_id);
          const channel = guild.channels.cache.get(classroom_channel_id);
          channel.send('<@&' + learner_role_id + '> It\'s time for *Studying Saturday*!');
+				 StudyingSaturday.begin();
   });
 
-// Enable the announcement:
+// Enable the announcements:
 reminderAnnouncement.start();
 eventAnnouncement.start();
 });
@@ -113,4 +121,5 @@ client.on("messageCreate", message => {
 	console.log(`${message.author.tag} from #${message.channel.name}: ${message.content}`);
 });
 
+// Log in
 client.login(config.BOT_TOKEN);
