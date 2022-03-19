@@ -1,0 +1,23 @@
+{
+  "name": "ernie",
+  "version": "1.0.0",
+  "description": "Learny Ernie - Studying Saturdays Discord bot.",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dechrissen/ernie.git"
+  },
+  "author": "Dechrissen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dechrissen/ernie/issues"
+  },
+  "homepage": "https://github.com/Dechrissen/ernie#readme",
+  "dependencies": {
+    "cron": "^1.8.2",
+    "discord.js": "^13.6.0"
+  }
+}
