@@ -48,33 +48,64 @@ client.once('ready', () => {
 	derkscord_id = '577602263682646017';
 	classroom_channel_id = '954723619924226129';
 	learner_role_id = '954771555680944270';
-	participant_role_id = '954779034519224390';
+
 
 	const derkscord = client.guilds.cache.get(derkscord_id);
   const classroom = derkscord.channels.cache.get(classroom_channel_id);
+
 	//StudyingSaturday.beginRegistration(derkscord);
-  StudyingSaturday.beginStudy(derkscord);
+  //StudyingSaturday.beginStudy(derkscord);
 
 	// Weekly reminder for Studying Saturdays event
 	// This runs every Saturday 10 minutes prior to 11:00:00
-	let reminderAnnouncement = new cron.CronJob('0 50 10 * * 6', () => {
-         classroom.send('<@&' + learner_role_id + '> *Studying Saturday* will begin in 10 minutes!');
-         StudyingSaturday.beginRegistration(derkscord);
+	let reminderAnnouncement = new cron.CronJob('5 * * * * 6', () => {
+
+        classroom.send('<@&' + learner_role_id + '> *Studying Saturday* will begin in 10 minutes!');
+        StudyingSaturday.beginRegistration(derkscord);
   });
 
 	// Weekly Studying Saturdays announcement message
 	// This runs every Saturday at 11:00:00
 	let studyAnnouncement = new cron.CronJob('0 0 11 * * 6', () => {
+         let participant_role = derkscord.roles.cache.find(role => role.name === "Participant");
+         let participant_role_id = participant_role.id;
          classroom.send('<@&' + participant_role_id + '> It\'s time for *Studying Saturday*!');
          StudyingSaturday.beginStudy(derkscord);
   });
 
   let writingAnnouncement = new cron.CronJob('0 20 11 * * 6', () => {
+    let participant_role = derkscord.roles.cache.find(role => role.name === "Participant");
+    let participant_role_id = participant_role.id;
          classroom.send('<@&' + participant_role_id + '> Studying Phase has ended! Write a short paragraph about your learning. 10 minutes!');
   });
 
   let discussionAnnouncement = new cron.CronJob('0 30 11 * * 6', () => {
+    let participant_role = derkscord.roles.cache.find(role => role.name === "Participant");
+    let participant_role_id = participant_role.id;
          classroom.send('<@&' + participant_role_id + '> Writing Phase has ended! Discuss the topic with the group to **solidify your learning**.\nThe classroom closes in 30 minutes.');
+  });
+
+  let overAnnouncement = new cron.CronJob('40 * * * * 6', () => {
+         classroom.send('Studying Saturday has ended. See you next week! 🤓');
+         //const role = derkscord.roles.cache.get(participant_role_id);
+         let participant_role = derkscord.roles.cache.find(role => role.name === "Participant");
+
+
+         participant_role.delete('Studying Saturday is over; removed role from all users.')
+         .then(console.log)
+         .catch(console.error);
+  });
+
+  let roleCreationSchedule = new cron.CronJob('15 * * * * *', () => {
+    // creates the Participant role daily
+    derkscord.roles.create({
+       name: "Participant",
+       color: "#0aa22c",
+       position: 99,
+       mentionable: true
+    })
+    .then(console.log)
+    .catch(console.error);
   });
 
 // Enable the announcements
@@ -82,6 +113,8 @@ reminderAnnouncement.start();
 studyAnnouncement.start();
 writingAnnouncement.start();
 discussionAnnouncement.start();
+overAnnouncement.start();
+roleCreationSchedule.start();
 });
 
 client.on("messageCreate", message => {

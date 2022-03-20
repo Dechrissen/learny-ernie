@@ -6,6 +6,9 @@ function beginRegistration (derkscord) {
 
   // define variable for classroom channel
   const classroom = derkscord.channels.cache.get(classroom_channel_id);
+  let participant_role = derkscord.roles.cache.find(role => role.name === "Participant");
+  let participant_role_id = participant_role.id;
+
   const timerEmbed = new MessageEmbed().setTitle('old title');
 
   classroom.send('Registration is now open! React with 🤓 to join today\'s session.').then(sent => { // 'sent' is the message just sent
@@ -29,7 +32,7 @@ function beginRegistration (derkscord) {
 
        // add Participant role to user
        let member = derkscord.members.cache.get(user.id);
-       member.roles.add('954779034519224390');
+       member.roles.add(participant_role_id);
        classroom.send(`<@${user.id}> joined!`);
     });
 
