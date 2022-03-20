@@ -1,7 +1,8 @@
 const { MessageEmbed } = require('discord.js');
+let fs = require("fs")
 
-function begin (derkscord) {
-  console.log('Starting Studying Saturday event...');
+function beginRegistration (derkscord) {
+  console.log('Starting Studying Saturday registration phase...');
 
   // define variable for classroom channel
   const classroom = derkscord.channels.cache.get(classroom_channel_id);
@@ -14,7 +15,7 @@ function begin (derkscord) {
 	     return reaction.emoji.name === '🤓' && user.id !== sent.author.id;
     };
 
-    const reactionCollector = sent.createReactionCollector({ filter, time: 5000 }); // 5s
+    const reactionCollector = sent.createReactionCollector({ filter, time: 5000 }); // 9m 50s
 
       //classroom.send({ embeds: [timerEmbed] }).then(msg => {
         //setTimeout(function () {
@@ -42,4 +43,25 @@ function begin (derkscord) {
 
 } // end of function
 
-module.exports = { begin };
+function beginStudy (derkscord) {
+  console.log('Starting Studying Saturday event...');
+
+  // define variable for classroom channel
+  const classroom = derkscord.channels.cache.get(classroom_channel_id);
+
+  // read topics.txt into a list
+  const readFileLines = filename =>
+      fs.readFileSync(filename)
+      .toString('UTF8')
+      .split('\r\n');
+  const topics = readFileLines('./topics.txt');
+  // remove the last item form the list, because it's always an empty string
+  topics.splice(-1, 1);
+  // choose a random topic
+  const x = Math.floor(topics.length * Math.random());
+
+  classroom.send(`Today\'s topic is: **${topics[x]}**!\nYou have 20 minutes to research this topic.\nGood luck! 🤓`);
+
+} // end of function
+
+module.exports = { beginRegistration, beginStudy };

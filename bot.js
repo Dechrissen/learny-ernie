@@ -51,41 +51,40 @@ client.once('ready', () => {
 	participant_role_id = '954779034519224390';
 
 	const derkscord = client.guilds.cache.get(derkscord_id);
-	StudyingSaturday.begin(derkscord);
+  const classroom = derkscord.channels.cache.get(classroom_channel_id);
+	//StudyingSaturday.beginRegistration(derkscord);
+  StudyingSaturday.beginStudy(derkscord);
 
 	// Weekly reminder for Studying Saturdays event
 	// This runs every Saturday 10 minutes prior to 11:00:00
 	let reminderAnnouncement = new cron.CronJob('0 50 10 * * 6', () => {
-         const guild = client.guilds.cache.get(derkscord_id);
-         const channel = guild.channels.cache.get(classroom_channel_id);
-         channel.send('<@&' + learner_role_id + '> *Studying Saturday* will begin in 10 minutes!');
+         classroom.send('<@&' + learner_role_id + '> *Studying Saturday* will begin in 10 minutes!');
+         StudyingSaturday.beginRegistration(derkscord);
   });
 
 	// Weekly Studying Saturdays announcement message
 	// This runs every Saturday at 11:00:00
-	let eventAnnouncement = new cron.CronJob('0 0 11 * * 6', () => {
-         const guild = client.guilds.cache.get(derkscord_id);
-         const channel = guild.channels.cache.get(classroom_channel_id);
-         channel.send('<@&' + learner_role_id + '> It\'s time for *Studying Saturday*!');
-				 StudyingSaturday.begin();
+	let studyAnnouncement = new cron.CronJob('0 0 11 * * 6', () => {
+         classroom.send('<@&' + participant_role_id + '> It\'s time for *Studying Saturday*!');
+         StudyingSaturday.beginStudy(derkscord);
   });
 
-// Enable the announcements:
+  let writingAnnouncement = new cron.CronJob('0 20 11 * * 6', () => {
+         classroom.send('<@&' + participant_role_id + '> Studying Phase has ended! Write a short paragraph about your learning. 10 minutes!');
+  });
+
+  let discussionAnnouncement = new cron.CronJob('0 30 11 * * 6', () => {
+         classroom.send('<@&' + participant_role_id + '> Writing Phase has ended! Discuss the topic with the group to **solidify your learning**.\nThe classroom closes in 30 minutes.');
+  });
+
+// Enable the announcements
 reminderAnnouncement.start();
-eventAnnouncement.start();
+studyAnnouncement.start();
+writingAnnouncement.start();
+discussionAnnouncement.start();
 });
 
 client.on("messageCreate", message => {
-	// The simpler way
-	let embed = new Discord.MessageEmbed({
-	 title: '**Hello World**',
-	 description: 'Markdown _for the win_!'
-	});
-
-	embed.setColor(7081235);
-	embed.setTimestamp(message.createdAt);
-	
-
   // checks to see if message author is a bot, or if it doesn't start with "!"
   if (!message.content.startsWith(prefix) || message.author.bot) return;
 
