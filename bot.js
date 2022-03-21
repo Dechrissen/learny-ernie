@@ -9,6 +9,7 @@ const StudyingSaturday = require("./StudyingSaturday.js");
 
 var commandList = []; // for storing a list of command names
 const prefix = "$";
+ernie_id = "954748023911624724";
 
 const client = new Discord.Client({
   intents: [
@@ -41,26 +42,34 @@ function setBotCommands(client) {
 client.once("ready", () => {
   console.log(`Ready! Logged in as ${client.user.tag}.`);
 
-  // Set bot's displayed activity on Discord
+  // set bot's displayed activity on Discord
   client.user.setActivity("Studying Saturdays");
 
-  // Create collection of nonbasic bot commands
+  // create collection of nonbasic bot commands
   setBotCommands(client);
 
-  // Define some relevant IDs
+  // define some relevant IDs
   derkscord_id = "577602263682646017";
   classroom_channel_id = "954723619924226129";
+  rules_channel_id = "954983007066947584";
   learner_role_id = "954771555680944270";
 
   const derkscord = client.guilds.cache.get(derkscord_id);
   const classroom = derkscord.channels.cache.get(classroom_channel_id);
+  const rules = derkscord.channels.cache.get(rules_channel_id);
+
+  // cache the Learner role assignment message
+  rules.messages
+    .fetch("955269155291004980")
+    .then((message) => console.log("Cached message: " + message.content))
+    .catch(console.error);
 
   //StudyingSaturday.beginRegistration(derkscord);
   //StudyingSaturday.beginStudy(derkscord);
 
   let roleCreationSchedule = new cron.CronJob("0 0 9 * * 6", () => {
     // SAT 9 AM
-    // creates the Participant role daily
+    // creates the Participant role weekly
     derkscord.roles
       .create({
         name: "Participant",
@@ -72,11 +81,9 @@ client.once("ready", () => {
       .catch(console.error);
   });
 
-  // Weekly reminder for Studying Saturdays event
-  // This runs every Saturday 10 minutes prior to 11:00:00
   let reminderAnnouncement = new cron.CronJob("0 50 10 * * 6", () => {
     // SAT 10:50 AM
-
+    // weekly reminder for Studying Saturdays event
     classroom.send(
       "<@&" +
         learner_role_id +
@@ -85,10 +92,9 @@ client.once("ready", () => {
     StudyingSaturday.beginRegistration(derkscord);
   });
 
-  // Weekly Studying Saturdays announcement message
-  // This runs every Saturday at 11:00:00
   let studyAnnouncement = new cron.CronJob("0 0 11 * * 6", () => {
     // SAT 11 AM
+    // weekly Studying Saturdays announcement message
     let participant_role = derkscord.roles.cache.find(
       (role) => role.name === "Participant"
     );
@@ -101,6 +107,7 @@ client.once("ready", () => {
 
   let writingAnnouncement = new cron.CronJob("0 20 11 * * 6", () => {
     // SAT 11:20 AM
+    // weekly writing phase announcement
     let participant_role = derkscord.roles.cache.find(
       (role) => role.name === "Participant"
     );
@@ -114,6 +121,7 @@ client.once("ready", () => {
 
   let discussionAnnouncement = new cron.CronJob("0 30 11 * * 6", () => {
     // SAT 11:30 AM
+    // weekly discussion phase announcement
     let participant_role = derkscord.roles.cache.find(
       (role) => role.name === "Participant"
     );
@@ -127,25 +135,51 @@ client.once("ready", () => {
 
   let overAnnouncement = new cron.CronJob("0 0 12 * * 6", () => {
     // SAT 12 PM
+    // weekly end-of-event announcement
     classroom.send("Studying Saturday has ended. See you next week! 🤓");
-    //const role = derkscord.roles.cache.get(participant_role_id);
     let participant_role = derkscord.roles.cache.find(
       (role) => role.name === "Participant"
     );
-
+    // delete the role to remove it from all members
     participant_role
       .delete("Studying Saturday is over; removed role from all users.")
       .then(console.log)
       .catch(console.error);
   });
 
-  // Enable the scheduled announcements
+  // enable the scheduled announcements
   reminderAnnouncement.start();
   studyAnnouncement.start();
   writingAnnouncement.start();
   discussionAnnouncement.start();
   overAnnouncement.start();
   roleCreationSchedule.start();
+
+  //rules.send("React with ✋ to get the Learner role.").then((sent) => {
+  //sent.react("✋");
+  //});
+  //rules.messages.fetch("955269155291004980").then((msg) => {
+  //msg.react("✋");
+  //});
+});
+
+// reaction listener for Learner role assignment in #rules channel
+client.on("messageReactionAdd", (reaction, user) => {
+  if (reaction.message.id !== "955269155291004980") return;
+  if (user.id == ernie_id) return;
+
+  if (reaction.emoji.name !== "✋") return;
+
+  const derkscord = client.guilds.cache.get(derkscord_id);
+  const role = derkscord.roles.cache.find((role) => role.name == "Learner");
+  if (!role) return;
+  derkscord.members
+    .fetch(user.id)
+    .then((member) => {
+      member.roles.add(role);
+    })
+    .catch(console.error);
+  reaction.users.remove(user);
 });
 
 client.on("messageCreate", (message) => {
@@ -155,7 +189,7 @@ client.on("messageCreate", (message) => {
   const args = message.content.slice(prefix.length).trim().split(/ +/);
   const command = args.shift().toLowerCase();
 
-  // !commands
+  // $commands
   if (command == "commands") {
     var listOfCommands = [];
     for (const c in commandList) {
@@ -167,7 +201,7 @@ client.on("messageCreate", (message) => {
     const new_stringOfCommands = stringOfCommands
       .replace("\\[|\\]", "")
       .replace(replacer, " | ");
-    message.channel.send("**Bot commands**: " + new_stringOfCommands);
+    message.channel.send("**Commands**: " + new_stringOfCommands);
     // log user's command use in console
     console.log(
       `${message.author.tag} from #${message.channel.name}: ` + message.content
@@ -199,5 +233,5 @@ client.on("messageCreate", (message) => {
   );
 });
 
-// Log in
+// log in as bot (bot token from ./config.json)
 client.login(config.BOT_TOKEN);

@@ -74,4 +74,9 @@ function beginStudy(derkscord) {
   );
 } // end of function
 
-module.exports = { beginRegistration, beginStudy };
+function assignRole(derkscord, member) {
+  let role = derkscord.roles.cache.find((r) => r.name === "Learner");
+  member.roles.add(role).catch(console.error);
+} // end of function
+
+module.exports = { beginRegistration, beginStudy, assignRole };
