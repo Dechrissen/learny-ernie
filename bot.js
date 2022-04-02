@@ -48,6 +48,8 @@ client.once("ready", () => {
   // create collection of nonbasic bot commands
   setBotCommands(client);
 
+  global.participant_ids = [];
+
   // define some relevant IDs
   derkscord_id = "577602263682646017";
   classroom_channel_id = "954723619924226129";
@@ -64,8 +66,10 @@ client.once("ready", () => {
     .then((message) => console.log("Cached message: " + message.content))
     .catch(console.error);
 
-  //StudyingSaturday.beginRegistration(derkscord);
+  StudyingSaturday.beginRegistration(derkscord);
   //StudyingSaturday.beginStudy(derkscord);
+  //StudyingSaturday.participate("aaaaaa");
+  //StudyingSaturday.handleScores(participant_ids);
 
   let roleCreationSchedule = new cron.CronJob("0 0 9 * * 6", () => {
     // SAT 9 AM
@@ -145,6 +149,10 @@ client.once("ready", () => {
       .delete("Studying Saturday is over; removed role from all users.")
       .then(console.log)
       .catch(console.error);
+    // increment points and streaks for all participants
+    StudyingSaturday.handleScores(participant_ids);
+    // clear global participant_ids list after end of event
+    participant_ids = [];
   });
 
   // enable the scheduled announcements

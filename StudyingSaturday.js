@@ -1,5 +1,74 @@
 const { MessageEmbed } = require("discord.js");
-let fs = require("fs");
+const fs = require("fs");
+
+async function participate(user_id) {
+  scores_file = "./data/scores.json";
+
+  fs.readFile(scores_file, (err, data) => {
+    if (err) {
+      console.log(err);
+    }
+    players_history = [];
+
+    var jsonParsed = JSON.parse(data);
+
+    for (const player in jsonParsed.players) {
+      players_history.push(jsonParsed.players[player].id);
+    }
+
+    // add current participant to scores.json if they aren't already in it
+    if (!players_history.includes(user_id)) {
+      jsonParsed.players.push({
+        id: user_id,
+        points: 0,
+        streak: 0,
+      });
+      fs.writeFile(scores_file, JSON.stringify(jsonParsed), "utf8", (err) => {
+        if (err) {
+          console.log(`Error writing file: ${err}`);
+        } else {
+          console.log(`File is written successfully!`);
+        }
+      });
+    }
+
+    console.log(players_history);
+  });
+}
+
+async function handleScores(player_ids) {
+  // exit function if no players participated this week
+  if (!player_ids.length) {
+    return;
+  }
+
+  scores_file = "./data/scores.json";
+
+  fs.readFile(scores_file, (err, data) => {
+    if (err) {
+      console.log(err);
+    }
+
+    var jsonParsed = JSON.parse(data);
+
+    for (player in jsonParsed.players) {
+      if (player_ids.includes(jsonParsed.players[player].id)) {
+        jsonParsed.players[player].points += 1;
+        jsonParsed.players[player].streak += 1;
+      } else {
+        jsonParsed.players[player].streak = 0;
+      }
+    }
+
+    fs.writeFile(scores_file, JSON.stringify(jsonParsed), "utf8", (err) => {
+      if (err) {
+        console.log(`Error writing file: ${err}`);
+      } else {
+        console.log(`File is written successfully!`);
+      }
+    });
+  });
+}
 
 function beginRegistration(derkscord) {
   console.log("Starting Studying Saturday registration phase...");
@@ -11,7 +80,7 @@ function beginRegistration(derkscord) {
   );
   let participant_role_id = participant_role.id;
 
-  const timerEmbed = new MessageEmbed().setTitle("old title");
+  //const timerEmbed = new MessageEmbed().setTitle("old title");
 
   classroom
     .send("Registration is now open! React with 🤓 to join today's session.")
@@ -42,11 +111,14 @@ function beginRegistration(derkscord) {
         let member = derkscord.members.cache.get(user.id);
         member.roles.add(participant_role_id);
         classroom.send(`<@${user.id}> joined!`);
+        participate(user.id);
+        participant_ids.push(user.id);
       });
 
       reactionCollector.on("end", (collected) => {
         console.log(`Total collected participants: ${collected.size}`);
         classroom.send("Registration is now closed.");
+        //handleScores(participant_ids);
       });
     })
     .catch((e) => {
@@ -79,4 +151,10 @@ function assignRole(derkscord, member) {
   member.roles.add(role).catch(console.error);
 } // end of function
 
-module.exports = { beginRegistration, beginStudy, assignRole };
+module.exports = {
+  beginRegistration,
+  beginStudy,
+  assignRole,
+  participate,
+  handleScores,
+};
