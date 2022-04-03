@@ -77,7 +77,7 @@ client.once("ready", () => {
     derkscord.roles
       .create({
         name: "Participant",
-        color: "#0aa22c",
+        color: "#7b0760",
         position: 99,
         mentionable: true,
       })
