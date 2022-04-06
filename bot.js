@@ -52,9 +52,10 @@ client.once("ready", () => {
 
   // define some relevant IDs
   derkscord_id = "577602263682646017";
-  classroom_channel_id = "954723619924226129";
+  classroom_channel_id = "961117247592615976";
   rules_channel_id = "954983007066947584";
   learner_role_id = "954771555680944270";
+  learner_role_message_id = "961117639118299186";
 
   const derkscord = client.guilds.cache.get(derkscord_id);
   const classroom = derkscord.channels.cache.get(classroom_channel_id);
@@ -62,11 +63,11 @@ client.once("ready", () => {
 
   // cache the Learner role assignment message
   rules.messages
-    .fetch("955269155291004980")
+    .fetch(learner_role_message_id)
     .then((message) => console.log("Cached message: " + message.content))
     .catch(console.error);
 
-  StudyingSaturday.beginRegistration(derkscord);
+  //StudyingSaturday.beginRegistration(derkscord);
   //StudyingSaturday.beginStudy(derkscord);
   //StudyingSaturday.participate("aaaaaa");
   //StudyingSaturday.handleScores(participant_ids);
@@ -81,7 +82,20 @@ client.once("ready", () => {
         position: 99,
         mentionable: true,
       })
-      .then(console.log)
+      .then((new_role) => {
+        classroom.permissionOverwrites.set(
+          [
+            {
+              id: new_role.id,
+              allow: ["SEND_MESSAGES"],
+            },
+          ],
+          "Changing permissions of #classroom to allow newly created Participant role to send messages."
+        );
+      })
+      .then(
+        console.log("Participant role created, #classroom permissions updated")
+      )
       .catch(console.error);
   });
 
@@ -163,20 +177,24 @@ client.once("ready", () => {
   overAnnouncement.start();
   roleCreationSchedule.start();
 
+  // in case I need to resend the Learner role reaction message
   //rules.send("React with ✋ to get the Learner role.").then((sent) => {
-  //sent.react("✋");
+  //  sent.react("✋");
   //});
-  //rules.messages.fetch("955269155291004980").then((msg) => {
-  //msg.react("✋");
-  //});
+  rules.messages.fetch(learner_role_message_id).then((msg) => {
+    msg.react("✋");
+  });
 });
 
 // reaction listener for Learner role assignment in #rules channel
 client.on("messageReactionAdd", (reaction, user) => {
-  if (reaction.message.id !== "955269155291004980") return;
+  if (reaction.message.id !== learner_role_message_id) return;
   if (user.id == ernie_id) return;
 
-  if (reaction.emoji.name !== "✋") return;
+  if (reaction.emoji.name !== "✋") {
+    reaction.users.remove(user);
+    return;
+  }
 
   const derkscord = client.guilds.cache.get(derkscord_id);
   const role = derkscord.roles.cache.find((role) => role.name == "Learner");

@@ -1,5 +1,5 @@
 {
-  "name": "ernie",
+  "name": "learny-ernie",
   "version": "1.0.0",
   "description": "Learny Ernie - Studying Saturdays Discord bot.",
   "main": "bot.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Dechrissen/ernie.git"
+    "url": "git+https://github.com/Dechrissen/learny-ernie.git"
   },
   "author": "Dechrissen",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Dechrissen/ernie/issues"
+    "url": "https://github.com/Dechrissen/learny-ernie/issues"
   },
-  "homepage": "https://github.com/Dechrissen/ernie#readme",
+  "homepage": "https://github.com/Dechrissen/learny-ernie#readme",
   "dependencies": {
     "cron": "^1.8.2",
     "discord.js": "^13.6.0"
