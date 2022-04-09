@@ -1,7 +1,7 @@
 const { MessageEmbed } = require("discord.js");
 const fs = require("fs");
 
-// Checks if a user_id is in the total players in scores.json
+// Checks if a user_id is in the total player history in scores.json
 // Adds a user_id to scores.json if they aren't already in it
 async function participate(user_id) {
   scores_file = "./data/scores.json";
@@ -43,7 +43,7 @@ async function participate(user_id) {
   });
 } // end of function
 
-// Takes a list of participants' ids and increments their points for
+// Takes a list of participants' IDs and increments their points for
 // participating, and handles their streaks
 async function handleScores(player_ids) {
   // exit function if no players participated this week
@@ -97,8 +97,6 @@ function beginRegistration(derkscord) {
   );
   let participant_role_id = participant_role.id;
 
-  //const timerEmbed = new MessageEmbed().setTitle("old title");
-
   // send the registration react message in #classroom channel
   classroom
     .send("Registration is now open! React with 🤓 to join today's session.")
@@ -112,8 +110,8 @@ function beginRegistration(derkscord) {
 
       const reactionCollector = sent.createReactionCollector({
         filter,
-        time: 5000,
-      }); // 9m 50s
+        time: 595000,
+      }); // 9m 55s duration
 
       // reaction collector which, upon receving a reaction:
       // - adds Participant role to user
@@ -140,13 +138,6 @@ function beginRegistration(derkscord) {
     .catch((e) => {
       console.log(e);
     });
-
-  //classroom.send({ embeds: [timerEmbed] }).then(msg => {
-  //setTimeout(function () {
-  //const timerEmbed = new MessageEmbed(msg).setTitle('new title');
-  //msg.edit({ embeds: [timerEmbed] });
-  //}, 2000)
-  //})
 } // end of function
 
 // Selects a random study topic from topics.txt and prompts all participants to

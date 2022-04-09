@@ -25,4 +25,4 @@ A quick breakdown of Learny Ernie's schedule (on Saturdays):
 
 ## Points & streaks
 
-All participants will earn 1 participation point (PP) for attending the event. For every week a particular player participates in a row, they will build streak points (SP).
+All participants will earn 1 Brain Point (BP) for attending the event. For every week a particular player participates in a row, they will build Streak Points (SP).

@@ -6,7 +6,7 @@ class PointsCommand extends BaseCommand {
     super();
     this.name = "points";
     this.description =
-      "Tells the user how many participation points (PP) and streak points (SP) they currently have.";
+      "Tells the user how many Brain Points (BP) and Streak Points (SP) they currently have.";
   }
   execute(message, args) {
     let member = message.member;
@@ -21,15 +21,23 @@ class PointsCommand extends BaseCommand {
 
       var jsonParsed = JSON.parse(data);
 
-      var user_points = jsonParsed.players.find(
-        (player) => player.id == user_id
-      ).points;
+      // try reading scores.json for user id; if it's not present, exit function
+      try {
+        var user_points = jsonParsed.players.find(
+          (player) => player.id == user_id
+        ).points;
+        var user_streak = jsonParsed.players.find(
+          (player) => player.id == user_id
+        ).streak;
+      } catch (error) {
+        console.log("Error: User not in scores.json");
+        message.reply(
+          "No user data. Participate in **Studying Saturdays** every Saturday at 11 AM Eastern to accumulate Brain Points!"
+        );
+        return;
+      }
 
-      var user_streak = jsonParsed.players.find(
-        (player) => player.id == user_id
-      ).streak;
-
-      message.reply(`You have ${user_points} PP and ${user_streak} SP.`);
+      message.reply(`You have ${user_points} BP and ${user_streak} SP.`);
     });
   }
 }

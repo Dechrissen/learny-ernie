@@ -9,6 +9,8 @@ const StudyingSaturday = require("./StudyingSaturday.js");
 
 var commandList = []; // for storing a list of command names
 const prefix = "$";
+
+// Learny Ernie's Discord user ID
 ernie_id = "954748023911624724";
 
 const client = new Discord.Client({
@@ -48,6 +50,8 @@ client.once("ready", () => {
   // create collection of nonbasic bot commands
   setBotCommands(client);
 
+  // declare global list for storing participants each week
+  // this list is cleared after each event
   global.participant_ids = [];
 
   // define some relevant IDs
@@ -67,6 +71,7 @@ client.once("ready", () => {
     .then((message) => console.log("Cached message: " + message.content))
     .catch(console.error);
 
+  // tests
   //StudyingSaturday.beginRegistration(derkscord);
   //StudyingSaturday.beginStudy(derkscord);
   //StudyingSaturday.participate("aaaaaa");
@@ -83,6 +88,7 @@ client.once("ready", () => {
         mentionable: true,
       })
       .then((new_role) => {
+        // set #classroom permissions for Participant role
         classroom.permissionOverwrites.set(
           [
             {
@@ -101,12 +107,14 @@ client.once("ready", () => {
 
   let reminderAnnouncement = new cron.CronJob("0 50 10 * * 6", () => {
     // SAT 10:50 AM
-    // weekly reminder for Studying Saturdays event
+    // weekly reminder for Studying Saturdays event (pings Learner role)
     classroom.send(
       "<@&" +
         learner_role_id +
         "> *Studying Saturday* will begin in 10 minutes!"
     );
+    // begins the registration period
+    // during this phase is when users are assigned the Participant role
     StudyingSaturday.beginRegistration(derkscord);
   });
 
@@ -147,7 +155,7 @@ client.once("ready", () => {
     classroom.send(
       "<@&" +
         participant_role_id +
-        "> Writing Phase has ended! Discuss the topic with the group to **solidify your learning**.\nThe classroom closes in 30 minutes."
+        "> Writing Phase has ended! Discuss the topic with the group to **crystallize your learning**.\nThe classroom closes in 30 minutes."
     );
   });
 
@@ -181,21 +189,22 @@ client.once("ready", () => {
   //rules.send("React with ✋ to get the Learner role.").then((sent) => {
   //  sent.react("✋");
   //});
-  rules.messages.fetch(learner_role_message_id).then((msg) => {
-    msg.react("✋");
-  });
+  //rules.messages.fetch(learner_role_message_id).then((msg) => {
+  //  msg.react("✋");
+  //});
 });
 
 // reaction listener for Learner role assignment in #rules channel
 client.on("messageReactionAdd", (reaction, user) => {
+  // checks
   if (reaction.message.id !== learner_role_message_id) return;
   if (user.id == ernie_id) return;
-
   if (reaction.emoji.name !== "✋") {
     reaction.users.remove(user);
     return;
   }
 
+  // add Learner role to user who reacts to this message in #rules
   const derkscord = client.guilds.cache.get(derkscord_id);
   const role = derkscord.roles.cache.find((role) => role.name == "Learner");
   if (!role) return;
