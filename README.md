@@ -11,7 +11,7 @@ Learny Ernie is a Discord bot & the host of **Studying Saturdays with Learny Ern
 - post it in the channel for other participants to read
 - and discuss with the other participants about the topic
 
-<p align="left"><img style="width:40%" src="https://github.com/Dechrissen/learny-ernie/blob/master/assets/studying-saturdays-logo.png" alt="Studying Saturdays logo"></img></p>
+<p align="center"><img style="width:50%" src="https://github.com/Dechrissen/learny-ernie/blob/master/assets/studying-saturdays-logo.png" alt="Studying Saturdays logo"></img></p>
 
 ## How it works
 
