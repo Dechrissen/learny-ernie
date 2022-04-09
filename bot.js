@@ -83,7 +83,7 @@ client.once("ready", () => {
     derkscord.roles
       .create({
         name: "Participant",
-        color: "#7b0760",
+        color: "#a714a1",
         position: 99,
         mentionable: true,
       })
@@ -92,12 +92,16 @@ client.once("ready", () => {
         classroom.permissionOverwrites.set(
           [
             {
+              id: derkscord_id,
+              deny: ["VIEW_CHANNEL", "SEND_MESSAGES"],
+            },
+            {
               id: learner_role_id,
               allow: ["VIEW_CHANNEL"],
             },
             {
               id: new_role.id,
-              allow: ["SEND_MESSAGES"],
+              allow: ["VIEW_CHANNEL", "SEND_MESSAGES"],
             },
           ],
           "Changing permissions of #classroom to allow newly created Participant role to send messages."
