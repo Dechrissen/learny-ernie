@@ -77,7 +77,7 @@ client.once("ready", () => {
   //StudyingSaturday.participate("aaaaaa");
   //StudyingSaturday.handleScores(participant_ids);
 
-  let roleCreationSchedule = new cron.CronJob("0 0 9 * * 6", () => {
+  let roleCreationSchedule = new cron.CronJob("0 0 13 * * 6", () => {
     // SAT 9 AM
     // creates the Participant role weekly
     derkscord.roles
@@ -92,6 +92,10 @@ client.once("ready", () => {
         classroom.permissionOverwrites.set(
           [
             {
+              id: learner_role_id,
+              allow: ["VIEW_CHANNEL"],
+            },
+            {
               id: new_role.id,
               allow: ["SEND_MESSAGES"],
             },
@@ -105,7 +109,7 @@ client.once("ready", () => {
       .catch(console.error);
   });
 
-  let reminderAnnouncement = new cron.CronJob("0 50 10 * * 6", () => {
+  let reminderAnnouncement = new cron.CronJob("0 50 14 * * 6", () => {
     // SAT 10:50 AM
     // weekly reminder for Studying Saturdays event (pings Learner role)
     classroom.send(
@@ -118,7 +122,7 @@ client.once("ready", () => {
     StudyingSaturday.beginRegistration(derkscord);
   });
 
-  let studyAnnouncement = new cron.CronJob("0 0 11 * * 6", () => {
+  let studyAnnouncement = new cron.CronJob("0 0 15 * * 6", () => {
     // SAT 11 AM
     // weekly Studying Saturdays announcement message
     let participant_role = derkscord.roles.cache.find(
@@ -131,7 +135,7 @@ client.once("ready", () => {
     StudyingSaturday.beginStudy(derkscord);
   });
 
-  let writingAnnouncement = new cron.CronJob("0 20 11 * * 6", () => {
+  let writingAnnouncement = new cron.CronJob("0 20 15 * * 6", () => {
     // SAT 11:20 AM
     // weekly writing phase announcement
     let participant_role = derkscord.roles.cache.find(
@@ -141,11 +145,11 @@ client.once("ready", () => {
     classroom.send(
       "<@&" +
         participant_role_id +
-        "> Studying Phase has ended! Write a short paragraph about your learning. 10 minutes!"
+        "> Studying Phase has ended! Write a short paragraph about your learning. You have 10 minutes!"
     );
   });
 
-  let discussionAnnouncement = new cron.CronJob("0 30 11 * * 6", () => {
+  let discussionAnnouncement = new cron.CronJob("0 30 15 * * 6", () => {
     // SAT 11:30 AM
     // weekly discussion phase announcement
     let participant_role = derkscord.roles.cache.find(
@@ -159,7 +163,7 @@ client.once("ready", () => {
     );
   });
 
-  let overAnnouncement = new cron.CronJob("0 0 12 * * 6", () => {
+  let overAnnouncement = new cron.CronJob("0 0 16 * * 6", () => {
     // SAT 12 PM
     // weekly end-of-event announcement
     classroom.send("Studying Saturday has ended. See you next week! 🤓");

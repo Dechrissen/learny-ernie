@@ -158,7 +158,7 @@ function beginStudy(derkscord) {
   const x = Math.floor(topics.length * Math.random());
 
   classroom.send(
-    `Today\'s topic is: **${topics[x]}**!\nYou have 20 minutes to research this topic.\nGood luck! 🤓`
+    `Today\'s topic is: **${topics[x]}**\nYou have 20 minutes to research this topic.\nGood luck! 🤓`
   );
 } // end of function
 
