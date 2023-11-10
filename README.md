@@ -26,3 +26,9 @@ A quick breakdown of Learny Ernie's schedule (on Saturdays):
 ## Points & streaks
 
 All participants will earn 1 Brain Point (BP) for attending the event. For every week a particular player participates in a row, they will build Streak Points (SP).
+
+## Running Ernie as a service
+
+- TODO: add how to set up init.d service here
+- To start: `sudo /etc/init.d/ernie start`
+- To stop: `sudo /etc/init.d/ernie stop`
